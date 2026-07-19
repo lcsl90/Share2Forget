@@ -5,7 +5,9 @@ services:
     container_name: share2forget
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      # Host-Port beim Deploy anpassbar: PORT=9000 docker compose up -d
+      # (oder PORT in einer .env-Datei setzen; Standard: 8080)
+      - "${PORT:-8080}:8080"
     environment:
       # Maximale Dateigröße pro Upload in MB
       MAX_FILE_MB: "2048"

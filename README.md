@@ -34,9 +34,18 @@ ist vergessen. Daher der Name.
 docker compose up -d --build
 ```
 
+Soll der Dienst auf einem anderen Port erreichbar sein, beim Deploy die Variable `PORT` setzen:
+
+```bash
+PORT=9000 docker compose up -d --build
+```
+
+Alternativ `PORT=9000` in eine `.env`-Datei neben der `docker-compose.yml` schreiben –
+dann reicht wieder ein einfaches `docker compose up -d`. Ohne Angabe bleibt es bei `8080`.
+
 Danach im Browser öffnen:
 
-- auf dem Server selbst: <http://localhost:8080>
+- auf dem Server selbst: <http://localhost:8080> (bzw. der gewählte Port)
 - von anderen Geräten im Netzwerk: `http://<IP-des-Servers>:8080`
 
 Typischer Ablauf: Auf dem Windows-PC einen Channel erstellen, den angezeigten Code (z. B. `Ab3x9`)
@@ -58,7 +67,9 @@ Umgebungsvariablen (siehe `docker-compose.yml`):
 | `CHANNEL_TTL_HOURS` | `24`     | Leere, inaktive Channels nach dieser Zeit löschen (`0` = nie) |
 | `DATA_DIR`          | Temp     | Ablageort für hochgeladene Dateien im Container               |
 
-Der Port lässt sich in der `docker-compose.yml` ändern (`"8080:8080"` → z. B. `"9000:8080"`).
+Der veröffentlichte Port wird über die Compose-Variable `PORT` gesteuert (Standard `8080`):
+entweder direkt beim Aufruf (`PORT=9000 docker compose up -d`) oder dauerhaft über eine
+`.env`-Datei mit dem Inhalt `PORT=9000`. Der Container lauscht intern weiterhin auf `8080`.
 
 ## Entwicklung ohne Docker
 
