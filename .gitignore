@@ -1,0 +1,16 @@
+# Build-Ausgaben
+bin/
+obj/
+publish/
+artifacts/
+
+# IDE / Editor
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Betriebssystem
+.DS_Store
+Thumbs.db

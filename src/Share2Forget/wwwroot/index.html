@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Share &amp; Forget</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📡</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">📡 Share <span>&amp;</span> Forget</div>
+    <input id="username" class="name-input" maxlength="24" placeholder="Dein Name" title="Dein Anzeigename in Channels">
+  </header>
+
+  <main id="view-home">
+    <section class="cards">
+      <div class="card">
+        <h2>Channel erstellen</h2>
+        <p class="hint">Code leer lassen, um einen zufälligen zu bekommen.</p>
+        <form id="create-form">
+          <input id="create-code" class="code-input" maxlength="5" placeholder="Code (5 Zeichen, optional)" autocomplete="off" spellcheck="false">
+          <input id="create-password" type="password" placeholder="Passwort (optional)" autocomplete="new-password">
+          <button type="submit" class="btn primary">Erstellen</button>
+        </form>
+      </div>
+      <div class="card">
+        <h2>Channel beitreten</h2>
+        <p class="hint">5-stelliger Code – Groß-/Kleinschreibung zählt.</p>
+        <form id="join-form">
+          <input id="join-code" class="code-input" maxlength="5" placeholder="Code (5 Zeichen)" autocomplete="off" spellcheck="false">
+          <button type="submit" class="btn primary">Beitreten</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="list-section">
+      <h2>Aktive Channels</h2>
+      <ul id="channel-list" class="channel-list"></ul>
+      <p id="no-channels" class="hint">Noch keine Channels – erstelle den ersten!</p>
+    </section>
+  </main>
+
+  <main id="view-channel" hidden>
+    <div class="channel-header">
+      <button id="btn-leave" class="btn ghost" title="Zurück zur Übersicht">←</button>
+      <span id="channel-code" class="channel-code">·····</span>
+      <button id="btn-copy" class="btn ghost" title="Code kopieren">⧉</button>
+      <span id="channel-users" class="users-badge">– online</span>
+      <span class="spacer"></span>
+      <button id="btn-delete" class="btn danger">Löschen</button>
+    </div>
+
+    <div id="messages" class="messages"></div>
+
+    <form id="send-form" class="send-bar">
+      <label class="btn ghost file-btn" title="Datei senden">📎<input id="file-input" type="file" multiple hidden></label>
+      <input id="message-input" placeholder="Nachricht oder Link …" autocomplete="off">
+      <button type="submit" class="btn primary">Senden</button>
+    </form>
+    <div class="drop-hint">Datei hier ablegen</div>
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="lib/signalr.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

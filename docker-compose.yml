@@ -1,0 +1,13 @@
+services:
+  share2forget:
+    build: .
+    image: share2forget
+    container_name: share2forget
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # Maximale Dateigröße pro Upload in MB
+      MAX_FILE_MB: "2048"
+      # Inaktive, leere Channels nach dieser Zeit automatisch vergessen (0 = nie)
+      CHANNEL_TTL_HOURS: "24"
