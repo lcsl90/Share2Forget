@@ -40,7 +40,7 @@ body {
 }
 
 .brand { display: flex; align-items: center; gap: .5rem; font-weight: 700; font-size: 1.1rem; letter-spacing: .2px; white-space: nowrap; }
-.brand span { color: var(--accent); }
+.brand em { color: var(--accent); font-style: normal; }
 .brand .icon { color: var(--accent); width: 1.25em; height: 1.25em; }
 
 /* ---------- Icons ---------- */

@@ -1,4 +1,4 @@
-# 📡 Share & Forget
+# Share2Forget
 
 Ein leichtgewichtiger, selbst gehosteter Dienst, um im eigenen Netzwerk schnell Links, Nachrichten
 und Dateien zwischen Geräten auszutauschen – z. B. vom Windows-PC auf das MacBook.
