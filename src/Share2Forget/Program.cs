@@ -51,16 +51,7 @@ app.MapGet("/api/channels", () => Results.Json(
 
 app.MapPost("/api/channels", (CreateRequest request) =>
 {
-    var code = request.Code?.Trim();
-    if (!string.IsNullOrEmpty(code) && !ChannelStore.IsValidCode(code))
-        return Results.BadRequest(new { error = "Der Code muss aus genau 5 Buchstaben oder Zahlen bestehen (A–Z, a–z, 0–9)." });
-
-    var (channel, error) = store.Create(code, string.IsNullOrEmpty(request.Password) ? null : request.Password);
-    if (channel is null)
-        return error == "invalid"
-            ? Results.BadRequest(new { error = "Der Code muss aus genau 5 Buchstaben oder Zahlen bestehen (A–Z, a–z, 0–9)." })
-            : Results.Conflict(new { error = $"Den Channel \"{code}\" gibt es schon. Bitte wähle einen anderen Code." });
-
+    var channel = store.Create(string.IsNullOrEmpty(request.Password) ? null : request.Password);
     return Results.Json(new { code = channel.Code, token = channel.Token, hasPassword = channel.HasPassword });
 });
 
@@ -186,6 +177,6 @@ if (ttlHours > 0)
 app.Run();
 
 record ChannelInfo(string Code, bool HasPassword, int Users, int Messages, DateTimeOffset CreatedAt);
-record CreateRequest(string? Code, string? Password);
+record CreateRequest(string? Password);
 record JoinRequest(string? Password);
 record DeleteRequest(string? Token, string? Password);

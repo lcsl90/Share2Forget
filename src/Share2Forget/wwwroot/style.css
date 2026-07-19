@@ -39,8 +39,24 @@ body {
   flex: 0 0 auto;
 }
 
-.brand { font-weight: 700; font-size: 1.1rem; letter-spacing: .2px; white-space: nowrap; }
+.brand { display: flex; align-items: center; gap: .5rem; font-weight: 700; font-size: 1.1rem; letter-spacing: .2px; white-space: nowrap; }
 .brand span { color: var(--accent); }
+.brand .icon { color: var(--accent); width: 1.25em; height: 1.25em; }
+
+/* ---------- Icons ---------- */
+
+.icon {
+  width: 1.05em;
+  height: 1.05em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+
+.icon.big { width: 1.6em; height: 1.6em; }
 
 .name-input {
   width: 11rem;
@@ -72,6 +88,10 @@ input::placeholder { color: var(--muted); }
 }
 
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
   background: var(--panel-2);
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -87,10 +107,13 @@ input::placeholder { color: var(--muted); }
 .btn.danger:hover { background: #3a1b22; }
 .btn.ghost { background: transparent; }
 .btn.small { padding: .3rem .6rem; font-size: .85rem; }
+.btn.icon-btn { padding: .5rem .6rem; }
+.btn.small.icon-btn { padding: .35rem .45rem; }
 
 .hint { color: var(--muted); font-size: .85rem; margin: .25rem 0 .75rem; }
 
-h2 { font-size: 1rem; margin: 0 0 .25rem; }
+h2 { display: flex; align-items: center; gap: .5rem; font-size: 1rem; margin: 0 0 .25rem; }
+h2 .icon { color: var(--accent); }
 
 /* ---------- Startseite ---------- */
 
@@ -133,7 +156,7 @@ h2 { font-size: 1rem; margin: 0 0 .25rem; }
 }
 
 .row-code { font-family: var(--mono); font-size: 1.15rem; letter-spacing: .2em; }
-.row-lock { width: 1.2rem; }
+.row-lock { width: 1.2rem; display: inline-flex; justify-content: center; color: var(--muted); }
 .row-info { color: var(--muted); font-size: .85rem; flex: 1 1 auto; }
 
 /* ---------- Channel-Ansicht ---------- */
@@ -161,7 +184,7 @@ h2 { font-size: 1rem; margin: 0 0 .25rem; }
 }
 
 .channel-code { font-family: var(--mono); font-size: 1.35rem; letter-spacing: .25em; }
-.users-badge { color: var(--muted); font-size: .85rem; margin-left: .5rem; }
+.users-badge { display: inline-flex; align-items: center; gap: .35rem; color: var(--muted); font-size: .85rem; margin-left: .5rem; }
 .spacer { flex: 1 1 auto; }
 
 .messages {
@@ -196,10 +219,10 @@ h2 { font-size: 1rem; margin: 0 0 .25rem; }
 .msg.mine .meta { color: #b9cdf3; }
 .msg a { color: #8db6ff; }
 .msg img { display: block; max-width: 100%; max-height: 260px; border-radius: 8px; margin: .25rem 0; }
-.msg .file-link { display: inline-block; font-weight: 600; text-decoration: none; }
+.msg .file-link { display: inline-flex; align-items: center; gap: .35rem; font-weight: 600; text-decoration: none; }
 .msg .file-link:hover { text-decoration: underline; }
 .msg .file-size { color: var(--muted); font-size: .78rem; margin-left: .5rem; }
-.msg.upload { color: var(--muted); font-size: .85rem; }
+.msg.upload { display: flex; align-items: center; gap: .4rem; color: var(--muted); font-size: .85rem; }
 
 .send-bar {
   display: flex;
@@ -217,6 +240,7 @@ h2 { font-size: 1rem; margin: 0 0 .25rem; }
   inset: 0;
   align-items: center;
   justify-content: center;
+  gap: .6rem;
   font-size: 1.3rem;
   background: rgba(13, 18, 32, .82);
   border: 2px dashed var(--accent);
@@ -251,5 +275,6 @@ h2 { font-size: 1rem; margin: 0 0 .25rem; }
 @media (max-width: 640px) {
   .msg { max-width: 88%; }
   .row-info { display: none; }
+  .send-label { display: none; }
   #view-home, #view-channel { padding-left: .75rem; padding-right: .75rem; }
 }

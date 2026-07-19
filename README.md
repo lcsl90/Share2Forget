@@ -11,7 +11,7 @@ ist vergessen. Daher der Name.
 ## Features
 
 - **Channel-Übersicht** als Startseite, mit Live-Anzeige, wer online ist
-- **Channels erstellen** – eigener 5-stelliger Code oder zufällig generiert, optional mit Passwort
+- **Channels erstellen** – der 5-stellige Code wird automatisch zufällig generiert, optional mit Passwort
 - **Channels löschen** – bei passwortgeschützten Channels nur mit Passwort
 - **Beitreten per Code** von jedem Gerät im Netzwerk (`http://<server-ip>:8080`, Code eingeben, fertig)
 - **Chat in Echtzeit** über SignalR/WebSockets, Links werden automatisch klickbar
@@ -29,14 +29,14 @@ Danach im Browser öffnen:
 - auf dem Server selbst: <http://localhost:8080>
 - von anderen Geräten im Netzwerk: `http://<IP-des-Servers>:8080`
 
-Typischer Ablauf: Auf dem Windows-PC einen Channel erstellen (z. B. `Ab3x9`), auf dem MacBook
-denselben Code eingeben – und Links, Texte und Dateien landen sofort auf beiden Geräten.
+Typischer Ablauf: Auf dem Windows-PC einen Channel erstellen, den angezeigten Code (z. B. `Ab3x9`)
+auf dem MacBook eingeben – und Links, Texte und Dateien landen sofort auf beiden Geräten.
 
 ### Regeln beim Erstellen und Beitreten
 
+- **Erstellen** erzeugt immer einen zufälligen, garantiert freien 5-stelligen Code und zeigt eine
+  Bestätigung an.
 - **Beitreten** zu einem Code, den es nicht gibt → Hinweis „Hier ist niemand“, sonst passiert nichts.
-- **Erstellen** mit einem Code, den es schon gibt → Fehlermeldung.
-- **Erstellen** mit freiem Code → Channel wird angelegt und eine Bestätigung angezeigt.
 
 ## Konfiguration
 

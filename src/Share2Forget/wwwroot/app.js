@@ -19,6 +19,13 @@ function myName() {
   return $("username").value.trim() || "Anonym";
 }
 
+/** Erzeugt ein <svg><use> auf ein Symbol aus dem Sprite in index.html. */
+function icon(name, cls = "icon") {
+  const tpl = document.createElement("template");
+  tpl.innerHTML = `<svg class="${cls}" aria-hidden="true"><use href="#${name}"/></svg>`;
+  return tpl.content.firstChild;
+}
+
 const tokenStore = {
   load() {
     try { return JSON.parse(localStorage.getItem("s2f-tokens") || "{}"); } catch { return {}; }
@@ -117,7 +124,8 @@ function renderMessage(msg) {
     const file = document.createElement("a");
     file.className = "file-link";
     file.href = fileUrl(msg, true);
-    file.textContent = "📄 " + msg.fileName;
+    file.appendChild(icon("i-file"));
+    file.appendChild(document.createTextNode(msg.fileName));
     body.appendChild(file);
     const size = document.createElement("span");
     size.className = "file-size";
@@ -237,18 +245,12 @@ async function enterChannel(code, token) {
 // ---------- Erstellen / Beitreten / Löschen ----------
 
 async function createFlow() {
-  const code = $("create-code").value.trim();
   const password = $("create-password").value;
-  if (code && !CODE_RE.test(code)) {
-    toast("Der Code muss aus genau 5 Buchstaben oder Zahlen bestehen.", "error");
-    return;
-  }
-  const res = await api("/api/channels", { method: "POST", body: { code: code || null, password: password || null } });
+  const res = await api("/api/channels", { method: "POST", body: { password: password || null } });
   if (!res.ok) {
     toast(res.data.error || "Erstellen fehlgeschlagen.", "error");
     return;
   }
-  $("create-code").value = "";
   $("create-password").value = "";
   if (await enterChannel(res.data.code, res.data.token)) {
     toast(`Channel ${res.data.code} wurde erstellt.`, "success");
@@ -337,8 +339,10 @@ function buildChannelRow(ch) {
 
   const lock = document.createElement("span");
   lock.className = "row-lock";
-  lock.textContent = ch.hasPassword ? "🔒" : "";
-  lock.title = ch.hasPassword ? "Passwortgeschützt" : "";
+  if (ch.hasPassword) {
+    lock.appendChild(icon("i-lock"));
+    lock.title = "Passwortgeschützt";
+  }
   li.appendChild(lock);
 
   const info = document.createElement("span");
@@ -353,9 +357,9 @@ function buildChannelRow(ch) {
   li.appendChild(join);
 
   const del = document.createElement("button");
-  del.className = "btn danger small";
-  del.textContent = "🗑";
+  del.className = "btn danger small icon-btn";
   del.title = "Channel löschen";
+  del.appendChild(icon("i-trash"));
   del.addEventListener("click", () => deleteFlow(ch.code));
   li.appendChild(del);
 
@@ -375,7 +379,9 @@ function uploadFile(file) {
   const list = $("messages");
   const progress = document.createElement("div");
   progress.className = "msg mine upload";
-  progress.textContent = `⬆ ${file.name} … 0 %`;
+  const label = document.createElement("span");
+  label.textContent = `${file.name} … 0 %`;
+  progress.append(icon("i-upload"), label);
   list.appendChild(progress);
   list.scrollTop = list.scrollHeight;
 
@@ -383,7 +389,7 @@ function uploadFile(file) {
   xhr.open("PUT", url);
   xhr.upload.onprogress = (e) => {
     if (e.lengthComputable) {
-      progress.textContent = `⬆ ${file.name} … ${Math.round((e.loaded / e.total) * 100)} %`;
+      label.textContent = `${file.name} … ${Math.round((e.loaded / e.total) * 100)} %`;
     }
   };
   xhr.onload = () => {

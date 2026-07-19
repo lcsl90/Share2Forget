@@ -50,9 +50,6 @@ public class ChannelStore
         Directory.CreateDirectory(dataDir);
     }
 
-    public static bool IsValidCode(string? code) =>
-        code is { Length: 5 } && code.All(char.IsAsciiLetterOrDigit);
-
     public IEnumerable<Channel> All() => _channels.Values;
 
     public Channel? Get(string code) =>
@@ -63,22 +60,15 @@ public class ChannelStore
             ? channel
             : null;
 
-    /// <returns>Error is "invalid", "exists" or null on success.</returns>
-    public (Channel? Channel, string? Error) Create(string? code, string? password)
+    /// <summary>Codes are always generated server-side; retry until one is free.</summary>
+    public Channel Create(string? password)
     {
-        if (!string.IsNullOrEmpty(code) && !IsValidCode(code))
-            return (null, "invalid");
-
-        for (var attempt = 0; attempt < 50; attempt++)
+        while (true)
         {
-            var actual = string.IsNullOrEmpty(code) ? GenerateCode() : code;
-            var channel = Build(actual, password);
-            if (_channels.TryAdd(actual, channel))
-                return (channel, null);
-            if (!string.IsNullOrEmpty(code))
-                return (null, "exists");
+            var channel = Build(GenerateCode(), password);
+            if (_channels.TryAdd(channel.Code, channel))
+                return channel;
         }
-        return (null, "exists");
     }
 
     public bool VerifyPassword(Channel channel, string? password)
