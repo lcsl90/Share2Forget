@@ -35,7 +35,10 @@ public class ChannelHub(ChannelStore store) : Hub
         await DecrementAsync(code);
     }
 
-    public async Task<object> SendMessage(string code, string text)
+    private const int MaxTextLength = 20_000;
+    private const int MaxHtmlLength = 100_000;
+
+    public async Task<object> SendMessage(string code, string text, string? html = null)
     {
         if (!Joined().TryGetValue(code, out var name))
             return new { ok = false, error = "Du bist nicht in diesem Channel." };
@@ -45,12 +48,20 @@ public class ChannelHub(ChannelStore store) : Hub
         text = (text ?? "").Trim();
         if (text.Length == 0)
             return new { ok = false, error = "Leere Nachricht." };
-        if (text.Length > 4000)
-            text = text[..4000];
+        if (text.Length > MaxTextLength)
+            return new { ok = false, error = $"Nachricht zu lang (max. {MaxTextLength:N0} Zeichen)." };
+
+        if (string.IsNullOrWhiteSpace(html) || html.Length > MaxHtmlLength)
+            html = null;
+        else
+        {
+            html = HtmlSanitizer.Sanitize(html);
+            if (string.IsNullOrWhiteSpace(html)) html = null;
+        }
 
         var message = new ChatMessage(
             Guid.NewGuid().ToString("N"), "text", name, Context.ConnectionId,
-            DateTimeOffset.UtcNow, Text: text);
+            DateTimeOffset.UtcNow, Text: text, Html: html);
         store.AddMessage(channel, message);
         await Clients.Group(code).SendAsync("message", code, message);
         return new { ok = true };

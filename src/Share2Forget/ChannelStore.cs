@@ -10,6 +10,7 @@ public record ChatMessage(
     string SenderId,
     DateTimeOffset SentAt,
     string? Text = null,
+    string? Html = null, // sanitized Rich-Text; null = reine Textnachricht
     string? FileId = null,
     string? FileName = null,
     long? FileSize = null);

@@ -24,6 +24,18 @@
     <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
     <symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
     <symbol id="i-send" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+    <symbol id="i-bold" viewBox="0 0 24 24"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></symbol>
+    <symbol id="i-italic" viewBox="0 0 24 24"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></symbol>
+    <symbol id="i-underline" viewBox="0 0 24 24"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"/><line x1="4" y1="21" x2="20" y2="21"/></symbol>
+    <symbol id="i-strike" viewBox="0 0 24 24"><path d="M17.3 5.3A6.5 6.5 0 0 0 12 3.5c-2.8 0-5 1.6-5 3.8 0 1.2.6 2.1 1.7 2.7"/><path d="M6.6 18.6a6.9 6.9 0 0 0 5.4 1.9c2.9 0 5-1.6 5-3.9 0-1.1-.5-2-1.5-2.6"/><line x1="4" y1="12" x2="20" y2="12"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></symbol>
+    <symbol id="i-code-block" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></symbol>
+    <symbol id="i-quote" viewBox="0 0 24 24"><path d="M10 11H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v6a4 4 0 0 1-4 4"/><path d="M20 11h-4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v6a4 4 0 0 1-4 4"/></symbol>
+    <symbol id="i-list-ul" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></symbol>
+    <symbol id="i-list-ol" viewBox="0 0 24 24"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-1.5 2-3 0-.8-.7-1.2-1.5-1S3.5 15 3.5 15"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+    <symbol id="i-clear-format" viewBox="0 0 24 24"><polyline points="7 7 7 4 20 4 20 7"/><line x1="10" y1="20" x2="16" y2="20"/><line x1="13.5" y1="4" x2="10" y2="20"/><line x1="3" y1="21" x2="19" y2="5"/></symbol>
   </svg>
 
   <header class="topbar">
@@ -71,9 +83,28 @@
     <div id="messages" class="messages"></div>
 
     <form id="send-form" class="send-bar">
-      <label class="btn ghost icon-btn file-btn" title="Datei senden"><svg class="icon"><use href="#i-paperclip"/></svg><input id="file-input" type="file" multiple hidden></label>
-      <input id="message-input" placeholder="Nachricht oder Link …" autocomplete="off">
-      <button type="submit" class="btn primary"><svg class="icon"><use href="#i-send"/></svg><span class="send-label">Senden</span></button>
+      <div id="toolbar" class="toolbar">
+        <button type="button" class="tb" data-cmd="bold" title="Fett (Strg+B)"><svg class="icon"><use href="#i-bold"/></svg></button>
+        <button type="button" class="tb" data-cmd="italic" title="Kursiv (Strg+I)"><svg class="icon"><use href="#i-italic"/></svg></button>
+        <button type="button" class="tb" data-cmd="underline" title="Unterstrichen (Strg+U)"><svg class="icon"><use href="#i-underline"/></svg></button>
+        <button type="button" class="tb" data-cmd="strikeThrough" title="Durchgestrichen (Strg+Umschalt+X)"><svg class="icon"><use href="#i-strike"/></svg></button>
+        <span class="tb-sep"></span>
+        <button type="button" class="tb" data-action="inline-code" title="Inline-Code (Strg+E) – oder `Text` tippen"><svg class="icon"><use href="#i-code"/></svg></button>
+        <button type="button" class="tb" data-action="code-block" title="Code-Block – oder ``` tippen"><svg class="icon"><use href="#i-code-block"/></svg></button>
+        <button type="button" class="tb" data-action="quote" title="Zitat – oder &gt; am Zeilenanfang tippen"><svg class="icon"><use href="#i-quote"/></svg></button>
+        <span class="tb-sep"></span>
+        <button type="button" class="tb" data-cmd="insertUnorderedList" title="Aufzählung – oder - am Zeilenanfang tippen"><svg class="icon"><use href="#i-list-ul"/></svg></button>
+        <button type="button" class="tb" data-cmd="insertOrderedList" title="Nummerierte Liste – oder 1. am Zeilenanfang tippen"><svg class="icon"><use href="#i-list-ol"/></svg></button>
+        <span class="tb-sep"></span>
+        <button type="button" class="tb" data-action="link" title="Link einfügen (Strg+K)"><svg class="icon"><use href="#i-link"/></svg></button>
+        <button type="button" class="tb" data-action="clear" title="Formatierung entfernen"><svg class="icon"><use href="#i-clear-format"/></svg></button>
+        <span class="tb-hint">Shift+Enter = neue Zeile</span>
+      </div>
+      <div class="input-row">
+        <label class="btn ghost icon-btn file-btn" title="Datei senden"><svg class="icon"><use href="#i-paperclip"/></svg><input id="file-input" type="file" multiple hidden></label>
+        <div id="message-input" class="composer" contenteditable="true" data-placeholder="Nachricht oder Link …" spellcheck="true"></div>
+        <button type="submit" class="btn primary send-btn"><svg class="icon"><use href="#i-send"/></svg><span class="send-label">Senden</span></button>
+      </div>
     </form>
     <div class="drop-hint"><svg class="icon big"><use href="#i-download"/></svg>Datei hier ablegen</div>
   </main>
@@ -81,6 +112,7 @@
   <div id="toast" class="toast" hidden></div>
 
   <script src="lib/signalr.min.js"></script>
+  <script src="lib/highlight.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

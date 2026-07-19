@@ -215,7 +215,7 @@ h2 .icon { color: var(--accent); }
   align-self: flex-end;
 }
 
-.msg .meta { font-size: .72rem; color: var(--muted); margin-bottom: .1rem; }
+.msg .meta { display: flex; align-items: center; gap: .5rem; font-size: .72rem; color: var(--muted); margin-bottom: .1rem; }
 .msg.mine .meta { color: #b9cdf3; }
 .msg a { color: #8db6ff; }
 .msg img { display: block; max-width: 100%; max-height: 260px; border-radius: 8px; margin: .25rem 0; }
@@ -226,12 +226,184 @@ h2 .icon { color: var(--accent); }
 
 .send-bar {
   display: flex;
-  gap: .5rem;
+  flex-direction: column;
+  gap: .4rem;
   padding-top: .75rem;
   flex: 0 0 auto;
 }
 
+.input-row { display: flex; gap: .5rem; align-items: flex-end; }
+
 .file-btn { display: flex; align-items: center; }
+.input-row .btn { min-height: 2.55rem; }
+
+/* ---------- Format-Toolbar ---------- */
+
+.toolbar { display: flex; align-items: center; gap: .1rem; flex-wrap: wrap; }
+
+.tb {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: .32rem .45rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.tb:hover { background: var(--panel-2); color: var(--text); }
+.tb.active { background: var(--accent-dim); border-color: var(--accent); color: #fff; }
+.tb-sep { width: 1px; height: 1.15rem; background: var(--border); margin: 0 .35rem; }
+.tb-hint { margin-left: auto; color: var(--muted); font-size: .72rem; }
+
+/* ---------- Composer (Rich-Text-Eingabe) ---------- */
+
+.composer {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 2.55rem;
+  max-height: 38vh;
+  overflow-y: auto;
+  background: var(--input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .55rem .75rem;
+  outline: none;
+  overflow-wrap: anywhere;
+}
+
+.composer:focus { border-color: var(--accent); }
+.composer.empty::before { content: attr(data-placeholder); color: var(--muted); pointer-events: none; }
+.composer p { margin: 0; }
+.composer a { color: #8db6ff; }
+
+.composer pre {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .5rem .65rem;
+  margin: .35rem 0;
+  font-family: var(--mono);
+  font-size: .85rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+/* ---------- Rich-Text: Composer und Nachrichten ---------- */
+
+.composer code, .body.rich code {
+  font-family: var(--mono);
+  font-size: .85em;
+  background: rgba(79, 140, 255, .13);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: .06em .32em;
+}
+
+.composer pre code, .code-block code {
+  display: block;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+}
+
+.composer blockquote, .body.rich blockquote {
+  margin: .35rem 0;
+  padding: .2rem .75rem;
+  border-left: 3px solid var(--accent);
+  border-radius: 3px;
+  background: rgba(79, 140, 255, .08);
+  color: #c9d4ec;
+}
+
+.composer ul, .composer ol, .body.rich ul, .body.rich ol { margin: .25rem 0; padding-left: 1.5rem; }
+
+.body.rich p { margin: 0; }
+.body.rich p + p, .body.rich p + .code-block, .body.rich .code-block + p { margin-top: .35rem; }
+.body.rich h1, .body.rich h2, .body.rich h3, .body.rich h4 { display: block; margin: .5rem 0 .25rem; line-height: 1.3; }
+.body.rich h1 { font-size: 1.25rem; }
+.body.rich h2 { font-size: 1.15rem; }
+.body.rich h3 { font-size: 1.05rem; }
+.body.rich h4 { font-size: .95rem; }
+.body.rich hr { border: 0; border-top: 1px solid var(--border); margin: .5rem 0; }
+.body.rich table { border-collapse: collapse; margin: .35rem 0; max-width: 100%; }
+.body.rich th, .body.rich td { border: 1px solid var(--border); padding: .25rem .6rem; }
+.body.rich th { background: var(--panel-2); text-align: left; }
+
+/* ---------- Copy-Buttons ---------- */
+
+.msg-copy {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+  padding: .12rem .3rem;
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .12s, color .12s, background .12s;
+}
+
+.msg .meta .msg-copy { margin-left: auto; }
+.msg:hover .msg-copy, .msg-copy:focus-visible, .msg-copy.ok, .code-head .msg-copy { opacity: 1; }
+.msg-copy:hover { background: rgba(255, 255, 255, .08); color: var(--text); }
+.msg-copy.ok { color: var(--ok); }
+
+@media (hover: none) {
+  .msg-copy { opacity: .55; }
+}
+
+/* ---------- Code-Fenster in Nachrichten ---------- */
+
+.msg:has(.code-block) { max-width: 92%; }
+
+.code-block {
+  margin: .35rem 0;
+  background: var(--input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  padding: .22rem .35rem .22rem .75rem;
+  background: rgba(255, 255, 255, .035);
+  border-bottom: 1px solid var(--border);
+}
+
+.code-lang { font-family: var(--mono); font-size: .72rem; color: var(--muted); letter-spacing: .05em; }
+
+.code-block pre {
+  margin: 0;
+  padding: .6rem .75rem;
+  overflow: auto;
+  max-height: 420px;
+  font-family: var(--mono);
+  font-size: .85rem;
+  line-height: 1.45;
+}
+
+/* ---------- Syntax-Highlighting (highlight.js-Klassen, eigenes Theme) ---------- */
+
+.hljs { color: #dbe4f8; }
+.hljs-comment, .hljs-quote { color: #7e8ba8; font-style: italic; }
+.hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-doctag, .hljs-operator { color: #79a7ff; }
+.hljs-string, .hljs-regexp, .hljs-addition { color: #7ee0a3; }
+.hljs-number, .hljs-symbol, .hljs-bullet, .hljs-link { color: #ffb86b; }
+.hljs-title, .hljs-section, .hljs-name, .hljs-selector-id, .hljs-selector-class { color: #ffd479; }
+.hljs-attr, .hljs-attribute, .hljs-variable, .hljs-template-variable, .hljs-params { color: #8ad4ff; }
+.hljs-type, .hljs-built_in, .hljs-builtin-name, .hljs-class .hljs-title, .hljs-title.class_ { color: #66d9e8; }
+.hljs-meta, .hljs-meta .hljs-keyword { color: #b394f0; }
+.hljs-deletion { color: #ff8e9a; }
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: 700; }
 
 /* Drag & Drop */
 .drop-hint {
@@ -274,7 +446,10 @@ h2 .icon { color: var(--accent); }
 
 @media (max-width: 640px) {
   .msg { max-width: 88%; }
+  .msg:has(.code-block) { max-width: 96%; }
   .row-info { display: none; }
   .send-label { display: none; }
+  .tb-hint { display: none; }
+  .composer { max-height: 30vh; }
   #view-home, #view-channel { padding-left: .75rem; padding-right: .75rem; }
 }
