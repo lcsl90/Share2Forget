@@ -223,6 +223,42 @@ h2 .icon { color: var(--accent); }
 .msg .file-link:hover { text-decoration: underline; }
 .msg .file-size { color: var(--muted); font-size: .78rem; margin-left: .5rem; }
 .msg.upload { display: flex; align-items: center; gap: .4rem; color: var(--muted); font-size: .85rem; }
+.msg .file-open { display: inline-flex; vertical-align: middle; margin-left: .4rem; color: var(--muted); }
+.msg .file-open:hover { color: var(--text); }
+.msg:has(.file-preview) { max-width: 92%; }
+.msg .file-preview {
+  margin: .4rem 0 0;
+  padding: .5rem .7rem;
+  background: var(--input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: .78rem;
+  line-height: 1.4;
+  color: var(--muted);
+  white-space: pre;
+  overflow: auto;
+  max-height: 260px;
+}
+
+/* ---------- Anhänge (lange Pastes) ---------- */
+
+.attachments { display: flex; flex-wrap: wrap; gap: .5rem; }
+.attachments[hidden] { display: none; }
+.attachment {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  max-width: 100%;
+  padding: .4rem .45rem .4rem .65rem;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.attachment > .icon { color: var(--accent); flex: 0 0 auto; }
+.attachment-info { display: flex; flex-direction: column; min-width: 0; }
+.attachment-name { font-size: .85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.attachment-meta { font-size: .75rem; color: var(--muted); }
 
 .send-bar {
   display: flex;

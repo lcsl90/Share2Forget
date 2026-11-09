@@ -8,8 +8,10 @@ var ttlHours = double.TryParse(builder.Configuration["CHANNEL_TTL_HOURS"], out v
 var dataDir = builder.Configuration["DATA_DIR"] ?? Path.Combine(Path.GetTempPath(), "share2forget");
 
 builder.WebHost.ConfigureKestrel(o => o.Limits.MaxRequestBodySize = maxFileMb * 1024 * 1024);
-// Rich-Text-Nachrichten (Code-Blöcke etc.) können deutlich größer als die 32-KB-Voreinstellung sein.
-builder.Services.AddSignalR(o => o.MaximumReceiveMessageSize = 512 * 1024);
+// Rich-Text-Nachrichten (Code-Blöcke, Error-Logs etc.) können deutlich größer als die
+// 32-KB-Voreinstellung sein. Text + HTML als JSON (UTF-8, HTML-Zeichen werden escaped) passen
+// bei den Limits aus ChannelHub sicher in 4 MB.
+builder.Services.AddSignalR(o => o.MaximumReceiveMessageSize = 4 * 1024 * 1024);
 builder.Services.AddSingleton(new ChannelStore(dataDir));
 
 var app = builder.Build();

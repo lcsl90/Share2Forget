@@ -35,8 +35,10 @@ public class ChannelHub(ChannelStore store) : Hub
         await DecrementAsync(code);
     }
 
-    private const int MaxTextLength = 20_000;
-    private const int MaxHtmlLength = 100_000;
+    // Muss zu MAX_TEXT_LEN / MAX_HTML_LEN in wwwroot/app.js passen.
+    // Noch längere Texte schickt der Client automatisch als Textdatei.
+    public const int MaxTextLength = 100_000;
+    public const int MaxHtmlLength = 400_000;
 
     public async Task<object> SendMessage(string code, string text, string? html = null)
     {

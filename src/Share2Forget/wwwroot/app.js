@@ -6,8 +6,16 @@ const viewChannel = $("view-channel");
 
 const CODE_RE = /^[A-Za-z0-9]{5}$/;
 const IMAGE_RE = /\.(png|jpe?g|gif|webp|avif|bmp)$/i;
-const MAX_TEXT_LEN = 20000;
-const MAX_HTML_LEN = 100000;
+const TEXT_FILE_RE = /\.(txt|log|md)$/i;
+// Muss zu ChannelHub.MaxTextLength / MaxHtmlLength passen.
+const MAX_TEXT_LEN = 100000;
+const MAX_HTML_LEN = 400000;
+// Ab dieser Größe wird eingefügter Text – wie bei Claude – zum Datei-Anhang statt Chat-Text.
+const PASTE_AS_FILE_CHARS = 5000;
+const PASTE_AS_FILE_LINES = 80;
+// Vorschau von Textdateien im Chat
+const PREVIEW_BYTES = 8192;
+const PREVIEW_LINES = 15;
 
 const state = {
   code: null,
@@ -565,14 +573,20 @@ function buildMessage() {
 
 async function sendMessage() {
   if (!state.code || !state.connection) return;
-  const { text, html } = buildMessage();
-  if (!text) return;
+  const files = takeAttachments();
+  let { text, html } = buildMessage();
+  if (!text && !files.length) return;
   if (text.length > MAX_TEXT_LEN || (html && html.length > MAX_HTML_LEN)) {
-    toast("Nachricht zu lang – bitte kürzen oder als Datei senden.", "error");
-    return;
+    // Statt abzulehnen: zu lange Nachricht automatisch als Textdatei verschicken
+    files.push(textToFile(text));
+    text = "";
+    html = null;
+    toast("Nachricht war zu lang – wird als Textdatei gesendet.", "info");
   }
   composer.replaceChildren();
   updateEmpty();
+  files.forEach(uploadFile);
+  if (!text) return;
   try {
     const res = await state.connection.invoke("SendMessage", state.code, text, html);
     if (res && !res.ok) toast(res.error, "error");
@@ -583,6 +597,117 @@ async function sendMessage() {
     else insertPlainText(text, false);
     updateEmpty();
   }
+}
+
+// ---------- Lange Texte als Datei-Anhang ----------
+
+/** Noch nicht gesendete Anhänge (lange Pastes), werden mit der nächsten Nachricht hochgeladen. */
+let pendingFiles = [];
+
+function countLines(text) {
+  return text ? text.split("\n").length : 0;
+}
+
+function isLongPaste(text) {
+  return text.length > PASTE_AS_FILE_CHARS || countLines(text) > PASTE_AS_FILE_LINES;
+}
+
+/** Baut aus Text eine .log- oder .txt-Datei mit Zeitstempel im Namen. */
+function textToFile(text) {
+  text = text.replace(/\r\n?/g, "\n");
+  const isLog = /\b(error|warn(ing)?|fatal|exception|traceback|stack ?trace|fail(ed|ure)?)\b|^\s+at\s+\S+|^\[?\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}/im.test(text);
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, "0");
+  const stamp = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+  return new File([text], `eingefuegt_${stamp}.${isLog ? "log" : "txt"}`, { type: "text/plain" });
+}
+
+function addAttachment(file, lines) {
+  pendingFiles.push({ file, lines });
+  renderAttachments();
+  composer.focus();
+}
+
+function takeAttachments() {
+  const files = pendingFiles.map((p) => p.file);
+  pendingFiles = [];
+  renderAttachments();
+  return files;
+}
+
+function renderAttachments() {
+  const box = $("attachments");
+  box.replaceChildren(...pendingFiles.map((entry) => {
+    const chip = document.createElement("div");
+    chip.className = "attachment";
+
+    const info = document.createElement("div");
+    info.className = "attachment-info";
+    const name = document.createElement("span");
+    name.className = "attachment-name";
+    name.textContent = entry.file.name;
+    const meta = document.createElement("span");
+    meta.className = "attachment-meta";
+    meta.textContent = `${entry.lines.toLocaleString("de-DE")} Zeilen · ${formatSize(entry.file.size)}`;
+    info.append(name, meta);
+
+    const asText = document.createElement("button");
+    asText.type = "button";
+    asText.className = "btn ghost small";
+    asText.textContent = "Als Text";
+    asText.title = "Doch direkt als Text in die Nachricht einfügen";
+    asText.addEventListener("click", async () => {
+      removeAttachment(entry);
+      const text = await entry.file.text();
+      composer.focus();
+      if (looksLikeCode(text)) insertNodeAtCaret(buildPre(text.trim(), ""));
+      else insertPlainText(text, false);
+    });
+
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "btn ghost small icon-btn";
+    remove.title = "Anhang entfernen";
+    remove.appendChild(icon("i-x"));
+    remove.addEventListener("click", () => removeAttachment(entry));
+
+    chip.append(icon("i-file-text", "icon big"), info, asText, remove);
+    return chip;
+  }));
+  box.hidden = pendingFiles.length === 0;
+}
+
+function removeAttachment(entry) {
+  pendingFiles = pendingFiles.filter((p) => p !== entry);
+  renderAttachments();
+}
+
+/** Lädt die ersten Zeilen einer Textdatei per Range-Request für die Vorschau im Chat. */
+async function loadTextPreview(msg, pre) {
+  try {
+    const res = await fetch(fileUrl(msg, false), { headers: { Range: `bytes=0-${PREVIEW_BYTES - 1}` } });
+    if (!res.ok) throw new Error();
+    const text = new TextDecoder().decode(await res.arrayBuffer()).replace(/\r/g, "");
+    let lines = text.split("\n");
+    let cut = (msg.fileSize || 0) > PREVIEW_BYTES;
+    if (cut && lines.length > 1) lines.pop(); // letzte Zeile ist evtl. mittendrin abgeschnitten
+    if (lines.length > PREVIEW_LINES) {
+      lines = lines.slice(0, PREVIEW_LINES);
+      cut = true;
+    }
+    pre.textContent = lines.join("\n").trimEnd() + (cut ? "\n…" : "");
+  } catch {
+    pre.remove();
+  }
+}
+
+async function copyFileText(msg, btn) {
+  let ok = false;
+  try {
+    const res = await fetch(fileUrl(msg, false));
+    if (res.ok) ok = await copyText(await res.text());
+  } catch { }
+  ok ? flashCheck(btn) : toast("Kopieren fehlgeschlagen.", "error");
 }
 
 // ---------- Nachrichten rendern ----------
@@ -711,13 +836,14 @@ function renderMessage(msg) {
   const metaLabel = document.createElement("span");
   metaLabel.textContent = `${msg.sender} · ${formatTime(msg.sentAt)}`;
   meta.appendChild(metaLabel);
-  if (msg.type === "text") {
+  const isTextFile = msg.type === "file" && TEXT_FILE_RE.test(msg.fileName || "");
+  if (msg.type === "text" || isTextFile) {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "msg-copy";
-    btn.title = "Nachricht formatiert kopieren";
+    btn.title = isTextFile ? "Dateiinhalt kopieren" : "Nachricht formatiert kopieren";
     btn.appendChild(icon("i-copy"));
-    btn.addEventListener("click", () => copyMessage(msg, btn));
+    btn.addEventListener("click", () => isTextFile ? copyFileText(msg, btn) : copyMessage(msg, btn));
     meta.appendChild(btn);
   }
   item.appendChild(meta);
@@ -748,6 +874,21 @@ function renderMessage(msg) {
     size.className = "file-size";
     size.textContent = formatSize(msg.fileSize);
     body.appendChild(size);
+    if (isTextFile) {
+      const open = document.createElement("a");
+      open.className = "file-open";
+      open.href = fileUrl(msg, false);
+      open.target = "_blank";
+      open.rel = "noopener";
+      open.title = "Im Browser öffnen";
+      open.appendChild(icon("i-external"));
+      body.appendChild(open);
+      const pre = document.createElement("pre");
+      pre.className = "file-preview";
+      pre.textContent = "Vorschau wird geladen …";
+      body.appendChild(pre);
+      loadTextPreview(msg, pre);
+    }
   } else if (msg.html) {
     body.classList.add("rich");
     body.appendChild(sanitizeHtml(msg.html));
@@ -1071,6 +1212,12 @@ composer.addEventListener("paste", (e) => {
     return;
   }
   const text = dt.getData("text/plain");
+  // Lange Pastes (Error-Logs, Dumps …) als Datei-Anhang statt Textwand im Chat
+  if (isLongPaste(text)) {
+    const file = textToFile(text);
+    addAttachment(file, countLines(text.replace(/\r\n?/g, "\n")));
+    return;
+  }
   if (closestInComposer(getSelection().anchorNode, "pre")) {
     insertPlainText(text, true); // im Code-Block immer roh einfügen
     return;

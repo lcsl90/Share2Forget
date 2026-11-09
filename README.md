@@ -26,6 +26,10 @@ ist vergessen. Daher der Name.
   Zwischenablage übernehmen (HTML + Plaintext)
 - **Dateien senden** per Button oder Drag & Drop, mit Fortschrittsanzeige und Bildvorschau;
   Screenshots können direkt aus der Zwischenablage eingefügt werden
+- **Lange Texte als Datei** (wie bei Claude): eingefügter Text ab 5.000 Zeichen bzw. 80 Zeilen
+  (z. B. Error-Logs) wird zum Anhang (`.log`/`.txt`) mit Zeilen-/Größenangabe – per „Als Text“
+  doch inline einfügbar. Nachrichten über 100.000 Zeichen werden automatisch als Textdatei gesendet
+- **Textdatei-Vorschau** im Chat (erste Zeilen), Inhalt per Klick kopieren oder im Browser öffnen
 - **Automatisches Vergessen**: leere, inaktive Channels werden nach 24 h aufgeräumt (konfigurierbar)
 
 ## Schnellstart
